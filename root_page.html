@@ -2,9 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    <title>Python logs to websocket</title>
+    <style>
+        html, body {
+            /*border: 1px solid black;*/
+            height: 100%;
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .autoscroll > * {
+            cursor: pointer;
+        }
+        #logs {
+            display: block;
+            font-family: monospace;
+            font-size: 80%;
+            border: gold solid 1px;
+            height: 50%;
+            min-height: 50%;
+            overflow: scroll;
+        }
+    </style>
+    <script>
+        ws_reconnect_interval = 2000;
+        ws_url = "ws://127.0.0.1:8080/ws";
+        var ws = null;
+
+        function ws_get_logs() {
+            ws = new WebSocket(ws_url);
+
+            ws.onmessage = function (event) {
+                let log_container = document.getElementById("logs");
+                let autoscroll = document.getElementById("autoscroll");
+                let log_record = document.createElement("div");
+                log_record.innerText = event.data;
+                log_container.appendChild(log_record);
+                if (autoscroll.checked) {
+                    log_container.scrollTop = log_container.scrollHeight;
+                }
+            };
+
+            ws.onopen = function (event) {
+                console.log("Websocket connected!");
+                // console.log(event);
+            };
+
+            // ws.onclose = function (event) {
+            //     console.log(event);
+            // };
+        }
+
+        function check_ws_log() {
+            if (!ws || ws.readyState === WebSocket.CLOSED) {
+                ws_get_logs();
+            }
+        }
+
+        ws_get_logs();
+        setInterval(check_ws_log, ws_reconnect_interval);
+
+    </script>
 </head>
 <body>
-$END$
+
+<h1>Logs</h1>
+
+<div id="logs"></div>
+<div class="autoscroll">
+    <input type="checkbox" checked id="autoscroll">
+    <label for="autoscroll">Autoscroll</label>
+</div>
+
 </body>
 </html>
