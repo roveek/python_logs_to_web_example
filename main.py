@@ -20,7 +20,6 @@ async def root_page(request: Request):
 
 async def websocket_page(request: Request):
 
-    # app = request.app
     websockets: List[WebSocketResponse] = app['websockets']
     ws = web.WebSocketResponse()
     await ws.prepare(request)
@@ -30,28 +29,12 @@ async def websocket_page(request: Request):
         log.debug(f'Подключен {ws}')
         async for msg in ws:
             print(f'websocket: {msg}')
-    # except asyncio.CancelledError:
-    #     websickets.remove(ws)
     except Exception as e:
         log.warning(f'{e}')
     finally:
         log.debug(f'Отключен {ws}')
         websockets.remove(ws)
         await ws.close()
-
-        # if msg.type == WSMsgType.CLOSE:
-        #     log.debug(f'Пакет типа CLOSE: {msg.type}.')
-        #     break
-        # elif msg.type == WSMsgType.TEXT:
-        #     # log.debug(f'Message: {msg}')
-        #     pass
-        # except asyncio.CancelledError as e:
-        #     pass
-        # except Exception as e:
-        #     log.exception('Непредвиденная ошибка:')
-        # finally:
-        #     # websockets[guid].remove(ws)
-        #     log.info(f'Отключен websocket канала.')
 
 
 async def queue_to_websocket(app: Application):
