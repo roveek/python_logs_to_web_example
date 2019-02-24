@@ -20,7 +20,7 @@ async def root_page(request: Request):
 
 async def websocket_page(request: Request):
 
-    websockets: List[WebSocketResponse] = app['websockets']
+    websockets: List[WebSocketResponse] = request.app['websockets']
     ws = web.WebSocketResponse()
     await ws.prepare(request)
 
@@ -69,12 +69,12 @@ if __name__ == '__main__':
 
     loop = asyncio.get_event_loop()
 
-    queue = janus.Queue(loop=loop)
-    app['log_queue'] = queue
+    log_queue = janus.Queue(loop=loop, maxsize=500)
+    app['log_queue'] = log_queue
 
     log_handlers = (
         logging.StreamHandler(),
-        logging.handlers.QueueHandler(queue.sync_q))
+        logging.handlers.QueueHandler(log_queue.sync_q))
     logging.basicConfig(
         level=logging.DEBUG, handlers=log_handlers,
         format='%(asctime)s %(levelname)-7s %(message)s')

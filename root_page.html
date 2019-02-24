@@ -27,16 +27,16 @@
     </style>
     <script>
         ws_reconnect_interval = 2000;
-        ws_url = "ws://127.0.0.1:8080/ws";
+        ws_url = "ws://" + location.host + "/ws";
         var ws = null;
 
         function ws_get_logs() {
             ws = new WebSocket(ws_url);
 
             ws.onmessage = function (event) {
-                let log_container = document.getElementById("logs");
-                let autoscroll = document.getElementById("autoscroll");
-                let log_record = document.createElement("div");
+                var log_container = document.getElementById("logs");
+                var autoscroll = document.getElementById("autoscroll");
+                var log_record = document.createElement("div");
                 log_record.innerText = event.data;
                 log_container.appendChild(log_record);
                 if (autoscroll.checked) {
